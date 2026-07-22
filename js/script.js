@@ -83,6 +83,30 @@
       .catch(function(){});
   })();
 
+  // ── ABOUT GALLERY: load photos from images/gallery/ folder on GitHub ──
+  // To add/remove photos, just upload/delete files in that folder on github.com —
+  // no code changes or redeploy needed, this reads the folder live on every page load.
+  (function(){
+    var REPO='JakeRayner/the-loose-lead-website';
+    var PATH='images/gallery';
+    var track=document.getElementById('about-gallery-track');
+    if(!track) return;
+    fetch('https://api.github.com/repos/'+REPO+'/contents/'+PATH)
+      .then(function(r){return r.json();})
+      .then(function(files){
+        if(!Array.isArray(files)) return;
+        var imgExt=/\.(jpe?g|png|webp)$/i;
+        var images=files.filter(function(f){return f.type==='file'&&imgExt.test(f.name);});
+        if(!images.length) return;
+        images.sort(function(a,b){return a.name.localeCompare(b.name);});
+        function makePost(f){
+          return '<div class="about-post"><img src="'+f.download_url+'" alt="Dog cared for by The Loose Lead Co." loading="lazy"></div>';
+        }
+        track.innerHTML=images.map(makePost).join('');
+      })
+      .catch(function(){});
+  })();
+
   // ── GALLERY STRIP: pause/resume + drag + lightbox ──
   (function(){
     const strip=document.getElementById('gallery-strip');
