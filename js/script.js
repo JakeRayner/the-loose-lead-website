@@ -27,6 +27,21 @@
     document.querySelectorAll('.faq-item.open').forEach(i=>i.classList.remove('open'));
     if(!isOpen)item.classList.add('open');
   }
+  // ── SKELETON LOADING: shimmer a tile until its image finishes loading ──
+  function wireLoadFade(container){
+    if(!container) return;
+    container.querySelectorAll('img').forEach(function(img){
+      var tile=img.closest('.about-post,.ig-post');
+      function done(){
+        img.classList.add('loaded');
+        if(tile) tile.classList.add('loaded');
+      }
+      if(img.complete && img.naturalWidth>0){ done(); }
+      else { img.addEventListener('load', done); img.addEventListener('error', done); }
+    });
+  }
+  wireLoadFade(document.getElementById('about-gallery-track'));
+
   const obs=new IntersectionObserver((entries)=>{
     entries.forEach(e=>{if(e.isIntersecting)e.target.classList.add('visible')});
   },{threshold:.08});
@@ -79,6 +94,7 @@
           return '<a href="'+p.link+'" target="_blank" rel="noopener" class="ig-post"><img src="'+p.url+'" alt="The Loose Lead Co. on Instagram" loading="lazy"></a>';
         }
         track.innerHTML=selected.map(makePost).join('');
+        wireLoadFade(track);
       })
       .catch(function(){});
   })();
@@ -103,6 +119,7 @@
           return '<div class="about-post"><img src="'+f.download_url+'" alt="Dog cared for by The Loose Lead Co." loading="lazy"></div>';
         }
         track.innerHTML=images.map(makePost).join('');
+        wireLoadFade(track);
       })
       .catch(function(){});
   })();
